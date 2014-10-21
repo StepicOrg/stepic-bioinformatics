@@ -194,24 +194,23 @@ def leaderboard_cyclo_peptide_sequencing(spec, N, mass_table):
 
     spec_count = Counter(spec)
     parentMass = max(spec)
-    leaderboard = [([],0)]
-    leaders = [("",0)]
+    leaderboard = [([],-1)]
+    leaders = [("",-1)]
     while leaderboard:
         new_list = []
         for p in leaderboard:
             for aa in mass_table:
                 new_peptide = p[0] + [aa]
                 accMass = getMass(new_peptide, mass_table)
-                if accMass == parentMass:  # cyclo score
-                    new_score = cyclo_score(new_peptide, spec_count, mass_table)
-                    new_list.append((new_peptide, new_score))
-                    if new_score > leaders[0][1]:
-                        leaders = [(new_peptide, new_score)]
-                    elif new_score == leaders[0][1]:
-                        leaders.append((new_peptide, new_score))
-                elif accMass < parentMass:  # linear score
+                if accMass <= parentMass:
                     new_score = linear_score(new_peptide, spec_count, mass_table)
                     new_list.append((new_peptide, new_score))
+                    if accMass == parentMass:
+                        cycloScore = cyclo_score(new_peptide, spec_count, mass_table)
+                        if cycloScore > leaders[0][1]:
+                            leaders = [(new_peptide, cycloScore)]
+                        elif cycloScore == leaders[0][1]:
+                            leaders.append((new_peptide, cycloScore))
 
         leaderboard = []
         new_list = sorted(new_list, reverse=True, key=lambda x: x[1])
