@@ -1106,9 +1106,10 @@ class Alignment(object):
                     d[1][j][c] = up
                 else:
                     d[1][j][c] = down
-                for k in range(3):
-                    if (d[k][j][c] > maxscore):
-                        maxscore = d[k][j][c]
+                if local:
+                    for k in range(3):
+                        if (d[k][j][c] > maxscore):
+                            maxscore = d[k][j][c]
         if (local) :
             return maxscore
         else :
